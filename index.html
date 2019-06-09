@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no"/>
+    <title></title>
+    <style type="text/css">
+        * {
+            margin: 0;
+            padding: 0;
+        }
+
+        html, body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        #container {
+            display: flex;
+            align-items: center; /*垂直居中*/
+            justify-content: center; /*水平居中*/
+        }
+
+        #wrap {
+            height: 175px;
+            width: 210px;
+            position: relative;
+        }
+
+        #img {
+            background: url(img/中奖照片.png) no-repeat;
+            height: 175px;
+            width: 210px;
+        }
+
+        /*canvas默认透明*/
+        canvas {
+            position: absolute;
+            left: 0;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+<div id="container">
+    <div id="wrap">
+        <div id="img"></div>
+        <canvas></canvas>
+    </div>
+</div>
+</body>
+<script type="text/javascript">
+    window.onload = function () {
+        // 要把电脑显示的分辨率变为100%
+        let xRandom = Math.floor(Math.random() * 3);
+        let yRandom = Math.floor(Math.random() * 3);
+        let imgDom = document.getElementById('img');
+        imgDom.style.backgroundPositionX = `${-xRandom * 210}px`;
+        imgDom.style.backgroundPositionY = `${-yRandom * 175}px`;
+        let canvas = document.querySelector("canvas");
+        canvas.width = document.getElementById('wrap').offsetWidth;
+        canvas.height = document.getElementById('wrap').offsetHeight;
+
+        if (canvas.getContext) {
+            let ctx = canvas.getContext("2d");
+            // 在canvas中引入图片，需要在图片加载完成之后
+            let img = new Image();
+            img.src = "img/cover.jpg";
+            img.onload = function () {
+                draw(img, ctx);
+            }
+        }
+
+        function draw(img, ctx) {
+            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+            canvas.addEventListener("mousemove", function (ev) {
+                ev = ev || event;
+                let x = ev.offsetX;
+                let y = ev.offsetY;
+                ctx.save();
+                ctx.beginPath();
+                ctx.globalCompositeOperation = "destination-out"; // 只有源图像外的目标图像部分会被显示，源图像是透明的。
+                ctx.arc(x, y, 10, 0, 360 * Math.PI / 180);
+                ctx.fill();
+                ctx.restore();
+            })
+        }
+    }
+</script>
+</html>
